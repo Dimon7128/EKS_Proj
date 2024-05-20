@@ -32,4 +32,4 @@ jobs:
         flake8 WeatherApp/app/
 
     - name: Build Docker Image
-      run: docker build -t myweatherapp:${{ github.sha }} -f .WeatherApp/deploy/Dockerfile .
+      run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
