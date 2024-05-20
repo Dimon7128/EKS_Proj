@@ -1,0 +1,21 @@
+# Ignore everything
+*
+
+# Exclude specific files and directories from being ignored
+!.gitignore
+!.myfuncs
+!*/
+!*.tf
+!*.c
+!*.md
+!*.sh
+!*.py
+!Makefile
+!*.h
+!*.html
+!*.css
+!Jenkinsfile
+!Dockerfile
+
+# Ignore all .terraform directories in any location
+**/.terraform/

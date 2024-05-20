@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Input Form</title>
+    <style>
+        body {
+            background-color: {{ bg_color }}; /* Use the bg_color variable */
+        }
+        /* Add any additional styles here or link to your CSS file */
+    </style>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <form method="POST" action="/">
+        <label for="user_input">Enter your input ho ho ho :</label>
+        <input type="text" id="user_input" name="user_input">
+        <input type="submit" value="Submit">
+        <!-- View History Button -->
+        <a href="{{ url_for('show_history') }}" class="history-button">View History</a>
+    </form>
+
+    {% if error_message %}
+        <div class="error-message">
+            <p>{{ error_message }}</p>
+            <p><a href="/error">Try Again</a></p>
+        </div>
+    {% endif %}
+
+    {% if api_data %}
+        <!-- Display location and forecast -->
+        <h1 class="location-title">Weather Forecast for {{ api_data.resolvedAddress }}</h1>
+        <div id="forecast">
+            <!-- Loop through each day in the forecast -->
+            {% for day in api_data.days %}
+                <div class="day-forecast">
+                    <h2>{{ day.datetime }}</h2>
+                    <!-- Ensure that the 'icon' attribute is correctly referenced -->
+                    <img class="weather-icon" src="{{ day.icon }}" alt="Weather Icon">
+                    <p><strong>Current:</strong> {{ day.temp }}°C</p>
+                    <p><strong>Day:</strong> {{ day.tempmax }}°C</p>
+                    <p><strong>Night:</strong> {{ day.tempmin }}°C</p>
+                    <p><strong>Humidity:</strong> {{ day.humidity }}%</p>
+                </div>
+            {% endfor %}
+        </div>
+    {% endif %}
+</body>
+</html>
+
