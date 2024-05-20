@@ -1,0 +1,42 @@
+weatherApp:
+  name: weather-app-deployment
+  replicas: 4
+  label: weather-app
+  image:
+    repository: dimabu/weatherapp
+    tag: 1.0.0
+  containerPort: 5000
+  service:
+    name: weather-app-service
+    port: 80
+    targetPort: 5000
+    nodePort: 32300
+  configMapName: green-configmap
+  pvc:
+    name: weatherapp-pvc
+    storageClassName: gp2
+    size: 10Gi
+  volumeMountPath: /weather_app/search_history
+
+configMaps:
+  green:
+    name: green-configmap
+    bgColor: "green"
+  blue:
+    name: blue-configmap
+    bgColor: "blue"
+
+nginx:
+  name: nginx-deployment
+  replicas: 4
+  label: nginx
+  image: chimenesjr/solitaire:nginx
+  containerPort: 80
+  service:
+    name: nginx-service
+    port: 80
+    targetPort: 80
+    nodePort: 32400
+
+ingress:
+  name: example-ingress

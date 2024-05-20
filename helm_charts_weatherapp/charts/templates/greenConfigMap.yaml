@@ -1,0 +1,8 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Values.configMaps.green.name  }}
+data:
+  BG_COLOR: "{{ .Values.configMaps.green.bgColor }}"
+
+

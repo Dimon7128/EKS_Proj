@@ -1,0 +1,55 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.weatherApp.name }}
+spec:
+  replicas: {{ .Values.weatherApp.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.weatherApp.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.weatherApp.label }}
+    spec:
+      containers:
+      - name: weather-app
+        image: "{{ .Values.weatherApp.image.repository }}:{{ .Values.weatherApp.image.tag }}"
+        ports:
+        - containerPort: {{ .Values.weatherApp.containerPort }}
+        volumeMounts:
+        - name: weatherapp-storage
+          mountPath: /weather_app/search_history
+        env:
+        - name: BG_COLOR
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Values.weatherApp.configMapName }}
+              key: BG_COLOR
+      volumes:
+      - name: weatherapp-storage
+        persistentVolumeClaim:
+          claimName: weatherapp-pvc
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.nginx.name }}
+spec:
+  replicas: {{ .Values.nginx.replicas }}
+  selector:
+    matchLabels:
+      app: {{ .Values.nginx.label }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.nginx.label }}
+    spec:
+      containers:
+      - name: nginx
+        image: "{{ .Values.nginx.image }}"
+        ports:
+        - containerPort: {{ .Values.nginx.containerPort }}
+
