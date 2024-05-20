@@ -2,7 +2,7 @@
 FROM python:3.9-slim as builder
 
 WORKDIR /weather_app
-COPY ../app /weather_app
+COPY ../WeatherApp/app /weather_app
 RUN pip install --upgrade pip
 RUN pip install --no-cache-dir --upgrade -r requirements.txt && rm -f requirements.txt
 
