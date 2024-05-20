@@ -16,6 +16,7 @@
 !*.yaml
 !Jenkinsfile
 !dockerfile
+!requirements.txt
 # Ignore all .terraform directories in any location
 **/.terraform/
 
