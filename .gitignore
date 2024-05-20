@@ -15,7 +15,7 @@
 !*.html
 !*.css
 !Jenkinsfile
-!Dockerfile
-
+!dockerfile
+!.yaml
 # Ignore all .terraform directories in any location
 **/.terraform/
