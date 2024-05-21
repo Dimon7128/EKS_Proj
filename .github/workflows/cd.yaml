@@ -1,30 +1,23 @@
 name: Continuous Deployment
 
 on:
-  push:
-    branches: [main]
-    paths:
-    - 'WeatherApp/**'
-  pull_request:
-    branches: [main]
-    paths:
-    - 'WeatherApp/**'
+  repository_dispatch:
+    types: [start-cd]
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs: [build]
 
     steps:
     - uses: actions/checkout@v2
 
-    - name: Download Docker Image Artifact
+    - name: Download Docker Image Files Artifact
       uses: actions/download-artifact@v2
       with:
-        name: docker-image
+        name: docker-image-files
         path: ./WeatherApp
 
-    - name: Build Docker Image from Artifact
+    - name: Rebuild Docker Image from Artifact
       run: docker build -t myweatherapp:${{ github.sha }} -f ./WeatherApp/deploy/Dockerfile ./WeatherApp
 
     - name: Push Docker Image to Registry
