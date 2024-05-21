@@ -13,7 +13,6 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    needs: [build] # Ensure this runs only after the CI job named 'build' completes successfully
 
     steps:
     - uses: actions/checkout@v2
