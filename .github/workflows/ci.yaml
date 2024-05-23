@@ -34,6 +34,9 @@ jobs:
     - name: Build Docker Image
       run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
 
+    - name: List files for debugging
+      run: ls -R
+
     - name: Save Dockerfile and requirements.txt for Later Jobs
       uses: actions/upload-artifact@v2
       with:
@@ -41,10 +44,4 @@ jobs:
         path: |
           WeatherApp/deploy/Dockerfile
           WeatherApp/app/requirements.txt
-          WeatherApp/app
-
-    - name: Trigger CD Workflow
-      uses: peter-evans/repository-dispatch@v1
-      with:
-        token: ${{ secrets.PAT }}
-        event-type: start-cd
+          WeatherApp/app/
