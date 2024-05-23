@@ -39,9 +39,8 @@ jobs:
       with:
         name: docker-image-files
         path: |
-          WeatherApp/deploy/Dockerfile
-          WeatherApp/app/requirements.txt
           WeatherApp/app/**
+          WeatherApp/deploy/**
 
     - name: Trigger CD Workflow
       uses: peter-evans/repository-dispatch@v1
