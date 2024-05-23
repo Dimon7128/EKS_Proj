@@ -41,6 +41,7 @@ jobs:
         path: |
           WeatherApp/deploy/Dockerfile
           WeatherApp/app/requirements.txt
+          WeatherApp/app/**
 
     - name: Trigger CD Workflow
       uses: peter-evans/repository-dispatch@v1
