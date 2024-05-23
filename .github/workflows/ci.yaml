@@ -45,5 +45,5 @@ jobs:
     - name: Trigger CD Workflow
       uses: peter-evans/repository-dispatch@v1
       with:
-        token: ${{ secrets.GITHUB_TOKEN }}
+        token: ${{ secrets.PAT }}
         event-type: start-cd
