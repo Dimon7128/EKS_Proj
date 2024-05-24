@@ -58,3 +58,49 @@ jobs:
       run: |
         echo "Uploaded artifacts:"
         ls -R image_tag.txt helm_charts_weatherapp
+
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Wait for a few seconds
+      run: sleep 15
+
+    - name: Check DNS Resolution
+      run: nslookup index.docker.io
+
+    - name: List files for debugging before downloading artifact
+      run: |
+        echo "Files before downloading artifact:"
+        ls -R
+
+    - name: Download Build Files
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: ./downloaded_artifacts
+
+    - name: Verify Downloaded Artifacts
+      run: |
+        echo "Downloaded artifacts:"
+        ls -R downloaded_artifacts
+
+    - name: Load Docker Image Tag
+      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Pull Docker Image
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
+
+    - name: List files for debugging after downloading artifact
+      run: ls -R downloaded_artifacts
+
+    - name: Update Helm Chart and Deploy
+      run: |
+        # Update Helm Chart with the new Docker image tag
+        # Deploy via Helm or another deployment tool
+
