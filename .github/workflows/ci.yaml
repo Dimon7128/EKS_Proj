@@ -39,8 +39,8 @@ jobs:
 
     - name: Tag and Push Docker Image
       run: |
-        docker tag myweatherapp:${{ github.sha }} ${{ secrets.DOCKER_REGISTRY }}/myweatherapp:${{ github.sha }}
-        docker push ${{ secrets.DOCKER_REGISTRY }}/myweatherapp:${{ github.sha }}
+        docker tag myweatherapp:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
 
     - name: Save Docker Image Tag for Later Jobs
       run: echo "DOCKER_IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
