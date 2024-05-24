@@ -12,19 +12,22 @@ jobs:
     - uses: actions/checkout@v2
 
     - name: Wait for a few seconds
-      run: sleep 30
+      run: sleep 15
 
-    # - name: Download Helm Chart Files
-    #   uses: actions/download-artifact@v2
-    #   with:
-    #     name: helm-chart-files
-    #     path: ./
+    - name: Check DNS Resolution
+      run: nslookup index.docker.io
 
-    - name: Log in to Docker Registry
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+    - name: Download Helm Chart Files
+      uses: actions/download-artifact@v2
+      with:
+        name: helm-chart-files
+        path: ./
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
 
     - name: Pull Docker Image
-      run: docker pull ${{ secrets.DOCKER_REGISTRY }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: List files for debugging
       run: ls -R
