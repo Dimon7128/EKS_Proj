@@ -19,6 +19,9 @@ jobs:
     - name: Check DNS Resolution
       run: nslookup index.docker.io
 
+    - name: List files for debugging
+      run: ls -R
+
     - name: Download Build Files
       uses: actions/download-artifact@v2
       with:
