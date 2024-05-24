@@ -52,6 +52,10 @@ jobs:
         path: |
           image_tag.txt
           helm_charts_weatherapp/
+    - name: List uploaded artifacts
+      run: |
+        echo "Uploaded artifacts: build-files"
+        ls -R
 
     - name: Trigger CD Workflow
       uses: peter-evans/repository-dispatch@v1
