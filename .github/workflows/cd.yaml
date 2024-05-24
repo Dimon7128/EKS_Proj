@@ -20,7 +20,9 @@ jobs:
       run: nslookup index.docker.io
 
     - name: List files for debugging before downloading artifact
-      run: ls -R
+      run: |
+        echo "Files before downloading artifact:"
+        ls -R
 
     - name: Download Build Files
       uses: actions/download-artifact@v4
@@ -29,10 +31,12 @@ jobs:
         path: ./downloaded_artifacts
 
     - name: Verify Downloaded Artifacts
-      run: ls -R
+      run: |
+        echo "Downloaded artifacts:"
+        ls -R downloaded_artifacts
 
     - name: Load Docker Image Tag
-      run: echo "DOCKER_IMAGE_TAG=$(cat image_tag.txt)" >> $GITHUB_ENV
+      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -41,7 +45,7 @@ jobs:
       run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: List files for debugging after downloading artifact
-      run: ls -R
+      run: ls -R downloaded_artifacts
 
     - name: Update Helm Chart and Deploy
       run: |

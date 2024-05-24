@@ -54,14 +54,7 @@ jobs:
           image_tag.txt
           helm_charts_weatherapp/
 
-    - name: Download Build Files
-      uses: actions/download-artifact@v4
-      with:
-        name: build-files
-        path: ./downloaded_artifacts
-
-    # - name: Trigger CD Workflow
-    #   uses: peter-evans/repository-dispatch@v1
-    #   with:
-    #     token: ${{ secrets.PAT }}
-    #     event-type: start-cd
+    - name: List uploaded artifact files
+      run: |
+        echo "Uploaded artifacts:"
+        ls -R image_tag.txt helm_charts_weatherapp
