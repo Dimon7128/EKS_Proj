@@ -14,7 +14,7 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Wait for a few seconds
-      run: sleep 15
+      run: sleep 5
 
     - name: Check DNS Resolution
       run: nslookup index.docker.io
@@ -23,12 +23,9 @@ jobs:
       run: |
         echo "Files before downloading artifact:"
         ls -R
-    - name: Checkout
-      uses: actions/checkout@v4
 
-    - name: Downlod Artifacts
+    - name: Download Build Files
       uses: actions/download-artifact@v4
-
       with:
         name: build-files
         path: ./downloaded_artifacts
@@ -39,7 +36,9 @@ jobs:
         ls -R downloaded_artifacts
 
     - name: Load Docker Image Tag
-      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+      run: |
+        echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+        cat downloaded_artifacts/image_tag.txt
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
