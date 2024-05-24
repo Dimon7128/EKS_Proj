@@ -1,14 +1,15 @@
-name: Continuous Deployment
+name: Download and Use Artifact
 
 on:
-  workflow_run:
-    workflows: ["Continuous Integration"]
-    types:
-    - completed
+  repository_dispatch:
+    types: [start-release]
 
 jobs:
-  deploy:
+  release:
     runs-on: ubuntu-latest
+
+    permissions:
+      contents: write
 
     steps:
     - uses: actions/checkout@v4
@@ -36,9 +37,7 @@ jobs:
         ls -R downloaded_artifacts
 
     - name: Load Docker Image Tag
-      run: |
-        echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
-        cat downloaded_artifacts/image_tag.txt
+      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
@@ -46,10 +45,11 @@ jobs:
     - name: Pull Docker Image
       run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
-    - name: List files for debugging after downloading artifact
-      run: ls -R downloaded_artifacts
+    - name: Zip the build artifacts
+      run: zip -r build.zip downloaded_artifacts/
 
-    - name: Update Helm Chart and Deploy
-      run: |
-        # Update Helm Chart with the new Docker image tag
-        # Deploy via Helm or another deployment tool
+    - name: Create GitHub Release
+      uses: ncipollo/release-action@v1
+      with:
+        artifacts: "build.zip"
+        token: ${{ secrets.GITHUB_TOKEN }}
