@@ -17,11 +17,11 @@ jobs:
     - name: Check DNS Resolution
       run: nslookup index.docker.io
 
-    - name: Download Build Files
-      uses: actions/download-artifact@v2
-      with:
-        name: build-files
-        path: ./
+    # - name: Download Build Files
+    #   uses: actions/download-artifact@v2
+    #   with:
+    #     name: build-files
+    #     path: ./
 
     - name: Load Docker Image Tag
       run: echo "DOCKER_IMAGE_TAG=$(cat image_tag.txt)" >> $GITHUB_ENV
