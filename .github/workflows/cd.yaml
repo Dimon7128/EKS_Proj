@@ -23,9 +23,12 @@ jobs:
       run: |
         echo "Files before downloading artifact:"
         ls -R
+    - name: Checkout
+      uses: actions/checkout@v4
 
-    - name: Download Build Files
+    - name: Downlod Artifacts
       uses: actions/download-artifact@v4
+
       with:
         name: build-files
         path: ./downloaded_artifacts
