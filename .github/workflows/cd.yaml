@@ -1,8 +1,10 @@
 name: Continuous Deployment
 
 on:
-  repository_dispatch:
-    types: [start-cd]
+  workflow_run:
+    workflows: ["Continuous Integration"]
+    types:
+    - completed
 
 jobs:
   deploy:
@@ -17,11 +19,17 @@ jobs:
     - name: Check DNS Resolution
       run: nslookup index.docker.io
 
+    - name: List files for debugging before downloading artifact
+      run: ls -R
+
     - name: Download Build Files
       uses: actions/download-artifact@v2
       with:
         name: build-files
         path: ./
+
+    - name: Verify Downloaded Artifacts
+      run: ls -R
 
     - name: Load Docker Image Tag
       run: echo "DOCKER_IMAGE_TAG=$(cat image_tag.txt)" >> $GITHUB_ENV
@@ -32,7 +40,7 @@ jobs:
     - name: Pull Docker Image
       run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
-    - name: List files for debugging
+    - name: List files for debugging after downloading artifact
       run: ls -R
 
     - name: Update Helm Chart and Deploy
