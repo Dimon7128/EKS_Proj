@@ -14,11 +14,11 @@ jobs:
     - name: Wait for a few seconds
       run: sleep 30
 
-    - name: Download Helm Chart Files
-      uses: actions/download-artifact@v2
-      with:
-        name: helm-chart-files
-        path: ./
+    # - name: Download Helm Chart Files
+    #   uses: actions/download-artifact@v2
+    #   with:
+    #     name: helm-chart-files
+    #     path: ./
 
     - name: Log in to Docker Registry
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login ${{ secrets.DOCKER_REGISTRY }} -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
