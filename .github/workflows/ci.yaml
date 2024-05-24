@@ -59,6 +59,18 @@ jobs:
         echo "Uploaded artifacts:"
         ls -R
 
+    - name: List "uploaded artifacts"
+      run: |
+        echo "Uploaded artifacts:"
+        ls -R
+
+    - name: List uploaded artifacts
+      run: |
+        echo "Uploaded artifacts:"
+        ls -R
+        echo "Artifact details:"
+        find . -name 'build-files'
+
     # - name: Trigger CD Workflow
     #   uses: peter-evans/repository-dispatch@v1
     #   with:
