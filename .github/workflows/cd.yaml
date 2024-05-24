@@ -14,6 +14,10 @@ jobs:
     - name: Wait for a few seconds
       run: sleep 30
 
+    - name: List files for debugging
+      run: ls -R
+
+
     - name: Download Docker Image Files Artifact
       uses: actions/download-artifact@v2
       with:
