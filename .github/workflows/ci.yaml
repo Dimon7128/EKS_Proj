@@ -42,14 +42,15 @@ jobs:
         docker tag myweatherapp:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
         docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
 
-    - name: Save Docker Image Tag for Later Jobs
-      run: echo "DOCKER_IMAGE_TAG=${{ github.sha }}" >> $GITHUB_ENV
+    - name: Save Docker Image Tag to File
+      run: echo "${{ github.sha }}" > image_tag.txt
 
-    - name: Upload Helm Chart Files
+    - name: Upload Image Tag and Helm Chart Files
       uses: actions/upload-artifact@v2
       with:
-        name: helm-chart-files
+        name: build-files
         path: |
+          image_tag.txt
           helm_charts_weatherapp/
 
     - name: Trigger CD Workflow
