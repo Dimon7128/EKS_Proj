@@ -1,0 +1,48 @@
+name: Helm Chart CI/CD
+
+on:
+  push:
+    branches: [main]
+    paths:
+    - 'helm_charts_weatherapp/**'
+  pull_request:
+    branches:
+    - main
+    paths:
+    - 'helm_charts_weatherapp/**'
+
+jobs:
+  static-test:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    - name: Static Test
+      run: echo "Running static tests on Helm charts..."
+
+  package-helm:
+    runs-on: ubuntu-latest
+    needs: static-test
+    steps:
+    - uses: actions/checkout@v4
+    - name: Package Helm Chart
+      run: helm package helm_charts_weatherapp -d ./helm_package
+    - name: Upload Helm Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: helm-package
+        path: ./helm_package
+
+  deploy:
+    runs-on: ubuntu-latest
+    needs: package-helm
+    steps:
+    - uses: actions/checkout@v4
+    - name: Download Helm Package
+      uses: actions/download-artifact@v4
+      with:
+        name: helm-package
+        path: ./downloaded_package
+    - name: Update Helm Chart and Deploy with ArgoCD
+      run: |
+        helm upgrade --install myweatherapp ./downloaded_package/helm_package
+        argocd app sync myweatherapp
