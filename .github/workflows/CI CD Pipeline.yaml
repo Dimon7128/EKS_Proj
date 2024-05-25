@@ -104,8 +104,8 @@ jobs:
     - name: List files for debugging after downloading artifact
       run: ls -R downloaded_artifacts
 
-    - name: Update Helm Chart and Deploy with ArgoCD
-      run: |
-        VERSION=${{ env.DOCKER_IMAGE_TAG }}
-        helm upgrade --install myweatherapp ./downloaded_artifacts/helm_charts_weatherapp --set image.tag=$VERSION
-        argocd app sync myweatherapp --revision $VERSION
+    # - name: Update Helm Chart and Deploy with ArgoCD
+    #   run: |
+    #     VERSION=${{ env.DOCKER_IMAGE_TAG }}
+    #     helm upgrade --install myweatherapp ./downloaded_artifacts/helm_charts_weatherapp --set image.tag=$VERSION
+    #     argocd app sync myweatherapp --revision $VERSION
