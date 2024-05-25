@@ -30,7 +30,7 @@ jobs:
     - name: Upload math result for job 2
       uses: actions/upload-artifact@v4
       with:
-        name: homework
+        name: homework1
         path: math-homework1.txt
 
   job_3:
