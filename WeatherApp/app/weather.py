@@ -7,10 +7,8 @@ import json
 from datetime import datetime
 import os
 
-
 load_dotenv()
 app = Flask(__name__)
-
 
 bg_color = os.getenv('BG_COLOR', '#FFFFFF')  # Default to white if not set
 api_key = os.getenv('KEY_API')
@@ -37,8 +35,8 @@ def get_input():
                 save_search_to_history(user_input, json_data)
             else:
                 print(
-                    f"Error retrieving data. Status code:/"
-                      f"{response.status_code}"
+                    f"Error retrieving data. Status code: "
+                    f"{response.status_code}"
                 )
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
@@ -73,7 +71,7 @@ def save_search_to_history(city, data):
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        #'data': data   This is the actual data received from the API
+        # 'data': data  # This is the actual data received from the API
     }
 
     # Construct the filename using the city and the current date
