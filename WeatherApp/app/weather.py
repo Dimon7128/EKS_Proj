@@ -38,7 +38,7 @@ def get_input():
             else:
                 print(
                     f"Error retrieving data. Status code:/"
-                      "{response.status_code}"
+                      f"{response.status_code}"
                 )
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
@@ -73,9 +73,9 @@ def save_search_to_history(city, data):
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        #'data': data  # This is the actual data received from the API
+        #'data': data   This is the actual data received from the API
     }
-    
+
     # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
     
