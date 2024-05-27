@@ -1,4 +1,6 @@
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+from flask import (
+    Flask, request, render_template, redirect, url_for, send_from_directory
+)
 from dotenv import load_dotenv
 import requests
 import json
@@ -23,8 +25,8 @@ def get_input():
 
         url = (
             f"https://weather.visualcrossing.com/VisualCrossingWebServices/"
-            f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&key={api_key}"
-            f"&include=days&land=en&iconSetvalues='icons1'"
+            f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
+            f"key={api_key}&include=days&land=en&iconSetvalues=‘icons1’"
         )
 
         try:
@@ -36,14 +38,18 @@ def get_input():
                 # Save the search to history
                 save_search_to_history(user_input, json_data)
             else:
-                print(f"Error retrieving data. Status code: {response.status_code}")
+                print(
+                    f"Error retrieving data. Status code: {response.status_code}"
+                )
                 return redirect(url_for('error_page'))
 
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
             return redirect(url_for('error_page'))
 
-    return render_template('input_form.html', api_data=json_data, bg_color=bg_color)
+    return render_template(
+        'input_form.html', api_data=json_data, bg_color=bg_color
+    )
 
 
 @app.route('/history')
@@ -70,12 +76,12 @@ def save_search_to_history(city, data):
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        # 'data': data  # This is the actual data received from the API
+        #'data': data  # This is the actual data received from the API
     }
-
+    
     # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
-
+    
     # Write the JSON data to the file
     file_path = os.path.join(history_dir, filename)
     with open(file_path, 'a') as f:
