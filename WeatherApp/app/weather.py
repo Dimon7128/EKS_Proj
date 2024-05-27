@@ -7,8 +7,10 @@ import json
 from datetime import datetime
 import os
 
+
 load_dotenv()
 app = Flask(__name__)
+
 
 bg_color = os.getenv('BG_COLOR', '#FFFFFF')  # Default to white if not set
 api_key = os.getenv('KEY_API')
@@ -19,20 +21,16 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
     json_data = {}
-
     if request.method == 'POST':
         user_input = request.form['user_input']
-
         url = (
             f"https://weather.visualcrossing.com/VisualCrossingWebServices/"
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
             f"key={api_key}&include=days&land=en&iconSetvalues=‘icons1’"
         )
-
         try:
             response = requests.get(url, timeout=10)
             print(f"Response Status Code: {response.status_code}")
-
             if response.status_code == 200:
                 json_data = response.json()
                 # Save the search to history
@@ -42,11 +40,9 @@ def get_input():
                     f"Error retrieving data. Status code: {response.status_code}"
                 )
                 return redirect(url_for('error_page'))
-
         except requests.exceptions.RequestException as e:
             print(f"Request error: {e}")
             return redirect(url_for('error_page'))
-
     return render_template(
         'input_form.html', api_data=json_data, bg_color=bg_color
     )
