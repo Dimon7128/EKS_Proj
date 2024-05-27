@@ -1,6 +1,8 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
 
@@ -15,14 +17,14 @@ def driver():
 
 def test_home_page(driver):
     driver.get("http://127.0.0.1:5000/")
-    assert "Weather App" in driver.title
+    assert "Input Form" in driver.title
 
 
 def test_weather_search(driver):
     driver.get("http://127.0.0.1:5000/")
-    search_box = driver.find_element_by_name("user_input")
+    search_box = driver.find_element(By.NAME, "user_input")
     search_box.send_keys("New York")
-    search_box.submit()
+    search_box.send_keys(Keys.RETURN)
     assert "Weather Forecast for New York" in driver.page_source
 
 
