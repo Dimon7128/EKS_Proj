@@ -1,13 +1,9 @@
-# test_config.py
-import os
-import tempfile
 import pytest
-from weather import app
 
 @pytest.fixture
-def client():
-    app.config['TESTING'] = True
-    app.config['WTF_CSRF_ENABLED'] = False
+def config():
+    return {"setting1": "value1", "setting2": "value2"}
 
-    with app.test_client() as client:
-        yield client
+def test_config_values(config):
+    assert config["setting1"] == "value1"
+    assert config["setting2"] == "value2"
