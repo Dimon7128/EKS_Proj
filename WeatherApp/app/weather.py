@@ -7,6 +7,7 @@ import json
 from datetime import datetime
 import os
 
+
 load_dotenv()
 app = Flask(__name__)
 
@@ -19,6 +20,8 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
     json_data = {}
+
+
     if request.method == 'POST':
         user_input = request.form['user_input']
         url = (
@@ -26,6 +29,8 @@ def get_input():
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
             f"key={api_key}&include=days&land=en&iconSetvalues=‘icons1’"
         )
+        
+        
         try:
             response = requests.get(url, timeout=10)
             print(f"Response Status Code: {response.status_code}")
@@ -33,6 +38,8 @@ def get_input():
                 json_data = response.json()
                 # Save the search to history
                 save_search_to_history(user_input, json_data)
+            
+            
             else:
                 print(
                     f"Error retrieving data. Status code: "
