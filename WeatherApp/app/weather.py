@@ -73,12 +73,11 @@ def save_search_to_history(city, data):
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        #'data': data  # This is the actual data received from the API
+        # 'data': data   This is the actual data received from the API
     }
 
     # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
-    
     # Write the JSON data to the file
     file_path = os.path.join(history_dir, filename)
     with open(file_path, 'a') as f:
