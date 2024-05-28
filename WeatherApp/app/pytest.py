@@ -11,7 +11,7 @@ class AppConectivityTest(unittest.TestCase):
 
     def test_connection(self):
         response = requests.get(APP_ADDR, timeout=10).status_code
-        self.assertEqual(response, 200, "Web app is not reachable   :( )")
+        self.assertEqual(response, 200, "Web app is not reachable    :( )")
 
 
 if __name__ == "main":
