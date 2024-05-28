@@ -18,7 +18,7 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
-print: f"API Key: {api_key}"  # Log the API key to verify it's loaded
+logging.debug(f"API Key: {api_key}")  # Log the API key to verify it's loaded
 
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
