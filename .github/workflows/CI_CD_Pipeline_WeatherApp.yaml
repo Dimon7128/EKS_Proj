@@ -33,7 +33,7 @@ jobs:
         flake8 WeatherApp/app/
 
     - name: Build Docker Image
-      run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
+      run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/ockerfile .
 
     - name: List Docker Images
       run: docker images
@@ -88,19 +88,26 @@ jobs:
     - name: Run Docker container
       run: docker run -d -p 5000:5000 --name myweatherapp ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
-    - name: Wait for application to start
-      run: sleep 15
+    - name: Wait for a few seconds
+      run: sleep 10
+
+    - name: Install Chrome dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y unzip xvfb libxi6 libgconf-2-4
 
     - name: Install Python Dependencies
       run: pip install pytest selenium webdriver-manager
 
-    - name: Run Selenium tests with XVFB
-      run: xvfb-run --server-args="-screen 0 1920x1080x24" pytest WeatherApp/app/test/test_weather_app.py
+    - name: Run Selenium tests
+      run: |
+        xvfb-run --server-args="-screen 0 1920x1080x24" pytest WeatherApp/app/test/test_weather_app.py
 
     - name: Stop and remove Docker container
       run: |
         docker stop myweatherapp
         docker rm myweatherapp
+
 
   deploy:
     runs-on: ubuntu-latest

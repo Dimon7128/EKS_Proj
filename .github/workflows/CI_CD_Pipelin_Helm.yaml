@@ -1,48 +1,134 @@
-name: Helm Chart CI/CD
+name: WeatherApp CI/CD
 
 on:
   push:
     branches: [main]
     paths:
-    - 'helm_charts_weatherapp/**'
+    - 'WeatherApp/**'
   pull_request:
     branches:
     - main
     paths:
-    - 'helm_charts_weatherapp/**'
+    - 'WeatherApp/**'
 
 jobs:
-  static-test:
+  build:
     runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Static Test
-      run: echo "Running static tests on Helm charts..."
 
-  package-helm:
-    runs-on: ubuntu-latest
-    needs: static-test
     steps:
     - uses: actions/checkout@v4
-    - name: Package Helm Chart
-      run: helm package helm_charts_weatherapp -d ./helm_package
-    - name: Upload Helm Package
+
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        pip install -r WeatherApp/app/requirements.txt
+
+    - name: Lint with Flake8
+      run: |
+        pip install flake8
+        flake8 WeatherApp/app/
+
+    - name: Build Docker Image
+      run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
+
+    - name: List Docker Images
+      run: docker images
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Tag and Push Docker Image
+      run: |
+        docker tag myweatherapp:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
+        docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
+
+    - name: Save Docker Image Tag to File
+      run: echo "${{ github.sha }}" > image_tag.txt
+
+    - name: Upload Image Tag and Helm Chart Files
       uses: actions/upload-artifact@v4
       with:
-        name: helm-package
-        path: ./helm_package
+        name: build-files
+        path: |
+          image_tag.txt
+          helm_charts_weatherapp/
+
+    - name: List uploaded artifact files
+      run: |
+        echo "Uploaded artifacts:"
+        ls -R image_tag.txt helm_charts_weatherapp
+
+
+  test:
+    runs-on: ubuntu-latest
+    needs: build
+
+    services:
+      selenium:
+        image: selenium/standalone-chrome
+        ports:
+        - 4444:4444
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Download Build Files
+      uses: actions/download-artifact@v4
+      with:
+        name: build-files
+        path: ./downloaded_artifacts
+
+    - name: Load Docker Image Tag
+      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+
+    - name: Run Docker container
+      run: docker run -d -p 5000:5000 --name myweatherapp ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
+
+    - name: Wait for application to start
+      run: sleep 15
+
+    - name: Install Python Dependencies
+      run: pip install pytest selenium webdriver-manager
+
+    - name: Run Selenium tests with XVFB
+      run: xvfb-run --server-args="-screen 0 1920x1080x24" pytest WeatherApp/app/test/test_weather_app.py
+
+    - name: Stop and remove Docker container
+      run: |
+        docker stop myweatherapp
+        docker rm myweatherapp
+
+    - name: Print Docker logs
+      run: docker logs myweatherapp
 
   deploy:
     runs-on: ubuntu-latest
-    needs: package-helm
+    needs: test
+
     steps:
     - uses: actions/checkout@v4
-    - name: Download Helm Package
+
+    - name: Download Build Files
       uses: actions/download-artifact@v4
       with:
-        name: helm-package
-        path: ./downloaded_package
-    - name: Update Helm Chart and Deploy with ArgoCD
-      run: |
-        helm upgrade --install myweatherapp ./downloaded_package/helm_package
-        argocd app sync myweatherapp
+        name: build-files
+        path: ./downloaded_artifacts
+
+    - name: Load Docker Image Tag
+      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Pull Docker Image
+      run: docker pull ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
+
+    # - name: Update Helm Chart and Deploy with ArgoCD
+    #   run: |
+    #     VERSION=${{ env.DOCKER_IMAGE_TAG }}
+    #     helm upgrade --install myweatherapp ./downloaded_artifacts/helm_charts_weatherapp --set image.tag=$VERSION
+    #     argocd app sync myweatherapp --revision $VERSION
