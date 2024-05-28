@@ -25,7 +25,7 @@ def get_input():
         url = (
             f"https://weather.visualcrossing.com/VisualCrossingWebServices/"
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
-            f"key={api_key}&include=days&lang=en&iconSet=icons1"
+            f"key=WP867H8PPLZ52ZSTR2AHGGEMJ&include=days&lang=en&iconSet=icons1"
         )
         logging.debug(f"Request URL: {url}")
         try:
