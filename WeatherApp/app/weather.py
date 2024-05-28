@@ -25,7 +25,7 @@ def get_input():
         url = (
             f"https://weather.visualcrossing.com/VisualCrossingWebServices/"
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
-            f"key=WP867H8PPLZ52ZSTR2AHGGEMJ&include=days&lang=en&iconSet=icons1"
+            f"key={api_key}&include=days&lang=en&iconSet=icons1"
         )
         logging.debug(f"Request URL: {url}")
         try:
@@ -36,7 +36,7 @@ def get_input():
                 json_data = response.json()
                 save_search_to_history(user_input, json_data)
             else:
-                logging.error(f"Error retrieving data.  Status code: {response.status_code}")
+                logging.error(f"Error retrieving data. Status code: {response.status_code}")
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
             logging.error(f"Request error: {e}")
