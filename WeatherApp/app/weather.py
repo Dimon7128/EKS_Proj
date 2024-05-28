@@ -18,7 +18,7 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
-logging.debug(f"API Key: {api_key}")  # Log the API key to verify it's loaded
+print: f"API Key: {api_key}"  # Log the API key to verify it's loaded
 
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
@@ -28,9 +28,9 @@ def get_input():
         url = (
             f"https://weather.visualcrossing.com/VisualCrossingWebServices/"
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
-            f"key=WP867H8PPLZ52ZSTR2AHGGEMJ&include=days&lang=en&iconSet=icons1"
+            f"key={api_key}&include=days&lang=en&iconSet=icons1"
         )
-        logging.debug(f"Request URL:  {url}")
+        logging.debug(f"Request URL: {url}")
         try:
             response = requests.get(url, timeout=10)
             logging.debug(f"Response Status Code: {response.status_code}")
