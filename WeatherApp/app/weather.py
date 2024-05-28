@@ -30,7 +30,7 @@ def get_input():
             f"rest/services/timeline/{user_input}/next7days?unitGroup=metric&"
             f"key=WP867H8PPLZ52ZSTR2AHGGEMJ&include=days&lang=en&iconSet=icons1"
         )
-        logging.debug(f"Request URL: {url}")
+        logging.debug(f"Request URL:  {url}")
         try:
             response = requests.get(url, timeout=10)
             logging.debug(f"Response Status Code: {response.status_code}")
