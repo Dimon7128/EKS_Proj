@@ -1,8 +1,10 @@
-from flask import Flask, request, render_template, redirect, url_for, send_from_directory
+import logging
+from flask import (
+    Flask, request, render_template, redirect, url_for, send_from_directory
+)
 from dotenv import load_dotenv
 import requests
 import json
-import logging
 from datetime import datetime
 import os
 
@@ -16,6 +18,7 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 
 # Set up logging
 logging.basicConfig(level=logging.DEBUG)
+logging.debug(f"API Key: {api_key}")  # Log the API key to verify it's loaded
 
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
@@ -31,9 +34,9 @@ def get_input():
         try:
             response = requests.get(url, timeout=10)
             logging.debug(f"Response Status Code: {response.status_code}")
-            logging.debug(f"Response Content: {response.content}")
             if response.status_code == 200:
                 json_data = response.json()
+                # Save the search to history
                 save_search_to_history(user_input, json_data)
             else:
                 logging.error(f"Error retrieving data. Status code: {response.status_code}")
@@ -45,6 +48,7 @@ def get_input():
 
 @app.route('/history')
 def show_history():
+    # List all the files in the history directory
     files = os.listdir(history_dir)
     files = [f for f in files if os.path.isfile(os.path.join(history_dir, f))]
     files.sort(reverse=True)  # Sort files by date
@@ -59,12 +63,15 @@ def error_page():
     return render_template('error.html')
 
 def save_search_to_history(city, data):
+    # Include the date and city in the data to be saved
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        #'data': data  # This is the actual data received from the API
+        #'data': data   This is the actual data received from the API
     }
+    # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
+    # Write the JSON data to the file
     file_path = os.path.join(history_dir, filename)
     with open(file_path, 'a') as f:
         json.dump(history_data, f, indent=4)
