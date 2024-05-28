@@ -27,6 +27,7 @@ jobs:
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> $GITHUB_ENV
         echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> $GITHUB_ENV
+        echo "$GITHUB_ENV or KEY_API"
 
     - name: Install dependencies
       run: |
