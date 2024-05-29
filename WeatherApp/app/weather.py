@@ -1,16 +1,13 @@
 import logging
-from flask import Flask, request, render_template, redirect
-from flask import url_for, send_from_directory
+from flask import Flask, request, render_template, redirect, url_for, send_from_directory
 from dotenv import load_dotenv
 import requests
 import json
 from datetime import datetime
 import os
 
-
 load_dotenv()
 app = Flask(__name__)
-
 
 bg_color = os.getenv('BG_COLOR', '#FFFFFF')
 api_key = os.getenv('KEY_API')
@@ -54,13 +51,15 @@ def get_input():
         bg_color=bg_color,
         app_version=app_version
     )
-
-
 @app.route('/history')
 def show_history():
+    # List all the files in the history directory
     files = os.listdir(history_dir)
     files = [f for f in files if os.path.isfile(os.path.join(history_dir, f))]
-    files.sort(reverse=True)
+    
+    # Sort files by modification time in descending order
+    files.sort(key=lambda f: os.path.getmtime(os.path.join(history_dir, f)), reverse=True)
+    
     return render_template('history.html', files=files)
 
 
@@ -77,13 +76,32 @@ def error_page():
 def save_search_to_history(city, data):
     history_data = {
         'city': city,
-        'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        'data': data
+        'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     }
-    filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
+    filename = f"{city}.json"
     file_path = os.path.join(history_dir, filename)
+
+    # Check if the file already exists
+    if os.path.exists(file_path):
+        # Read the existing data
+        with open(file_path, 'r') as f:
+            existing_data = json.load(f)
+        
+        # Append the new data to the existing data
+        if isinstance(existing_data, list):
+            existing_data.append(history_data)
+        else:
+            existing_data = [existing_data, history_data]
+        
+        # Sort the data by date in descending order
+        existing_data.sort(key=lambda x: x['date'], reverse=True)
+    else:
+        # If file does not exist, create a new list with the new data
+        existing_data = [history_data]
+
+    # Write the data back to the file
     with open(file_path, 'w') as f:
-        json.dump(history_data, f, indent=4)
+        json.dump(existing_data, f, indent=4)
 
 
 if __name__ == "__main__":
