@@ -25,10 +25,11 @@ jobs:
 
     - name: Print environment variables
       run: |
-        echo "KEY_API=${{ secrets.KEY_API }}"
-        echo "BG_COLOR=${{ secrets.BG_COLOR }}"
+        run: |
+        echo "KEY_API=${{ secrets.KEY_API }}" >> .env
+        echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> .env
         echo "KEY_API from .env file:"
-        cat .env | grep KEY_API
+        cat .env
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
