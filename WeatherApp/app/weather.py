@@ -6,6 +6,7 @@ import json
 from datetime import datetime
 import os
 
+
 load_dotenv()
 app = Flask(__name__)
 
@@ -13,6 +14,7 @@ bg_color = os.getenv('BG_COLOR', '#FFFFFF')
 api_key = os.getenv('KEY_API')
 history_dir = 'search_history'
 os.makedirs(history_dir, exist_ok=True)
+
 
 # Load version
 with open('VERSION', 'r') as f:
@@ -38,8 +40,7 @@ def get_input():
                 save_search_to_history(user_input, json_data)
             else:
                 logging.error(
-                    f"Error retrieving data. Status code:"
-                    f"{response.status_code}"
+                    f"Error retrieving data. Status code: {response.status_code}"
                 )
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
@@ -51,15 +52,20 @@ def get_input():
         bg_color=bg_color,
         app_version=app_version
     )
+
+
 @app.route('/history')
 def show_history():
     # List all the files in the history directory
     files = os.listdir(history_dir)
     files = [f for f in files if os.path.isfile(os.path.join(history_dir, f))]
-    
+
     # Sort files by modification time in descending order
-    files.sort(key=lambda f: os.path.getmtime(os.path.join(history_dir, f)), reverse=True)
-    
+    files.sort(
+        key=lambda f: os.path.getmtime(os.path.join(history_dir, f)), 
+        reverse=True
+    )
+
     return render_template('history.html', files=files)
 
 
@@ -86,13 +92,13 @@ def save_search_to_history(city, data):
         # Read the existing data
         with open(file_path, 'r') as f:
             existing_data = json.load(f)
-        
+
         # Append the new data to the existing data
         if isinstance(existing_data, list):
             existing_data.append(history_data)
         else:
             existing_data = [existing_data, history_data]
-        
+
         # Sort the data by date in descending order
         existing_data.sort(key=lambda x: x['date'], reverse=True)
     else:

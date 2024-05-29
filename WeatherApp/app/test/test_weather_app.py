@@ -5,6 +5,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 @pytest.fixture(scope="module")
 def driver():
     # Setup Chrome WebDriver
