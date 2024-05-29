@@ -20,6 +20,7 @@ os.makedirs(history_dir, exist_ok=True)  # Ensure the directory exists
 logging.basicConfig(level=logging.DEBUG)
 logging.debug(f"API Key: {api_key}")  # Log the API key to verify it's loaded
 
+
 @app.route('/', methods=['GET', 'POST'])
 def get_input():
     json_data = {}
@@ -39,12 +40,19 @@ def get_input():
                 # Save the search to history
                 save_search_to_history(user_input, json_data)
             else:
-                logging.error(f"Error retrieving data. Status code: {response.status_code}")
+                logging.error(
+                    f"Error retrieving data. Status code:/"
+                    f"{response.status_code}"
+                )
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
             logging.error(f"Request error: {e}")
             return redirect(url_for('error_page'))
-    return render_template('input_form.html', api_data=json_data, bg_color=bg_color)
+    return render_template(
+        'input_form.html', 
+        api_data=json_data, 
+        bg_color=bg_color)
+
 
 @app.route('/history')
 def show_history():
@@ -54,20 +62,23 @@ def show_history():
     files.sort(reverse=True)  # Sort files by date
     return render_template('history.html', files=files)
 
+
 @app.route('/download/<filename>')
 def download_file(filename):
     return send_from_directory(history_dir, filename, as_attachment=True)
 
+
 @app.route('/error', methods=['GET'])
 def error_page():
     return render_template('error.html')
+
 
 def save_search_to_history(city, data):
     # Include the date and city in the data to be saved
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        #'data': data   This is the actual data received from the API
+        # 'data': data  # This is the actual data received from the API
     }
     # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
@@ -75,6 +86,7 @@ def save_search_to_history(city, data):
     file_path = os.path.join(history_dir, filename)
     with open(file_path, 'a') as f:
         json.dump(history_data, f, indent=4)
+
 
 if __name__ == "__main__":
     app.run(host='127.0.0.1', port=5000, debug=True)
