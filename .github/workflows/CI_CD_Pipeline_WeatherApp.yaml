@@ -98,7 +98,7 @@ jobs:
       run: docker run -d -p 5000:5000 --name myweatherapp ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
 
     - name: Wait for a few seconds
-      run: sleep 10
+      run: sleep 30
 
     - name: Install Python Dependencies
       run: pip install pytest selenium webdriver-manager
