@@ -39,7 +39,7 @@ def get_input():
                 # Save the search to history
                 save_search_to_history(user_input, json_data)
             else:
-                logging.error(f"Error retrieving data. Status code: {response.status_code}")
+                logging.error(f"Error retrieving data.  Status code: {response.status_code}")
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
             logging.error(f"Request error: {e}")
