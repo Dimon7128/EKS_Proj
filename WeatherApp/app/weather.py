@@ -41,7 +41,7 @@ def get_input():
                 save_search_to_history(user_input, json_data)
             else:
                 logging.error(
-                    f"Error retrieving data. Status code:/"
+                    f"Error retrieving data. Status code:"
                     f"{response.status_code}"
                 )
                 return redirect(url_for('error_page'))
@@ -49,9 +49,10 @@ def get_input():
             logging.error(f"Request error: {e}")
             return redirect(url_for('error_page'))
     return render_template(
-        'input_form.html', 
-        api_data=json_data, 
-        bg_color=bg_color)
+        'input_form.html',
+        api_data=json_data,
+        bg_color=bg_color
+    )
 
 
 @app.route('/history')
@@ -78,13 +79,13 @@ def save_search_to_history(city, data):
     history_data = {
         'city': city,
         'date': datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
-        # 'data': data  # This is the actual data received from the API
+        'data': data  # This is the actual data received from the API
     }
     # Construct the filename using the city and the current date
     filename = f"{datetime.now().strftime('%Y-%m-%d')}_{city}.json"
     # Write the JSON data to the file
     file_path = os.path.join(history_dir, filename)
-    with open(file_path, 'a') as f:
+    with open(file_path, 'w') as f:  # Changed 'a' to 'w' to overwrite the file instead of appending
         json.dump(history_data, f, indent=4)
 
 
