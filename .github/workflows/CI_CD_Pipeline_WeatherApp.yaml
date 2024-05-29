@@ -27,6 +27,8 @@ jobs:
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}"
         echo "BG_COLOR=${{ secrets.BG_COLOR }}"
+        echo "API_KEY from .env file:"
+        cat .env | grep KEY_API
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
@@ -37,10 +39,10 @@ jobs:
       run: |
         pip install -r WeatherApp/app/requirements.txt
 
-    # - name: Lint with Flake8
-    #   run: |
-    #     pip install flake8
-    #     flake8 WeatherApp/app/
+    - name: Lint with Flake8
+      run: |
+        pip install flake8
+        flake8 WeatherApp/app/
 
     - name: Build Docker Image
       run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
