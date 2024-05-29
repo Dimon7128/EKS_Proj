@@ -27,7 +27,7 @@ jobs:
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}"
         echo "BG_COLOR=${{ secrets.BG_COLOR }}"
-        echo "API_KEY from .env file:"
+        echo "KEY_API from .env file:"
         cat .env | grep KEY_API
 
     - name: Set up Python 3.8

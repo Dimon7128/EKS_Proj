@@ -13,7 +13,7 @@
 !*.h
 !*.html
 !*.css
-!*.env
+# !*.env
 !*.yaml
 !Jenkinsfile
 !dockerfile
