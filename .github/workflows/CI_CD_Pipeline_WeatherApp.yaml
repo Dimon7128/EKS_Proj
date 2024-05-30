@@ -21,13 +21,13 @@ jobs:
     - name: Set environment variables
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> $GITHUB_ENV
-        echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> $GITHUB_ENV
 
-    - name: Print environment variables
+    - name: Write environment variables to .env file
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> .env
-        echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> .env
-        cat .env
+
+    - name: Print .env file for debugging
+      run: cat .env
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
