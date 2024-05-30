@@ -12,7 +12,7 @@ RUN pip install gunicorn
 # Stage 2: Production stage
 FROM builder 
 
-# Copy the application source code from the previous stage
+# Copy   the application source code from the previous stage
 #COPY --from=builder /weather_app /weather_app/
 
 EXPOSE 5000
