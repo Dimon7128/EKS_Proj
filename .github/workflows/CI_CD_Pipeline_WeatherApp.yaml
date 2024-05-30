@@ -110,8 +110,8 @@ jobs:
           sleep 5
         done
 
-    # - name: Print Docker logs for debugging
-    #   run: docker logs myweatherapp
+    - name: Print Docker logs for debugging
+      run: docker logs myweatherapp
 
     - name: Install Python Dependencies
       run: pip install pytest selenium webdriver-manager
