@@ -19,5 +19,6 @@ EXPOSE 5000
 #ARG BG_COLOR
 ENV BG_COLOR="GREEN"
 
-CMD ["python", "app.py"]
+CMD gunicorn --bind 0.0.0.0:5000 wsgi:app 
+
 
