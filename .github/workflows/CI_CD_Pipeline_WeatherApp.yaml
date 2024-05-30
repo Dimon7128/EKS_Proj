@@ -26,8 +26,8 @@ jobs:
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> .env
 
-    - name: Print .env file for debugging
-      run: cat .env
+    - name: Print working directory
+      run: pwd
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
