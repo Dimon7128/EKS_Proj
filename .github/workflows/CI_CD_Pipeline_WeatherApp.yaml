@@ -28,6 +28,8 @@ jobs:
 
     - name: Print working directory
       run: pwd
+    - name: Ensure .env file exists
+      run: ls -la
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
@@ -94,7 +96,8 @@ jobs:
 
     - name: Load Docker Image Tag
       run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
-
+    - name: Ensure .env file exists
+      run: ls -la
     - name: Run Docker container
       run: docker run -d -p 5000:5000 --name myweatherapp --env-file .env ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
     - name: Wait for the server to be ready
