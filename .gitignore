@@ -13,6 +13,7 @@
 !*.h
 !*.html
 !*.css
+!*VERSION
 # !*.env
 !*.yaml
 !Jenkinsfile
