@@ -96,8 +96,7 @@ jobs:
       run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
 
     - name: Run Docker container
-      run: docker run -d -p 5000:5000 --name myweatherapp ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
-
+      run: docker run -d -p 5000:5000 --name myweatherapp --env-file .env ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
     - name: Wait for the server to be ready
       run: |
         echo "Waiting for server to start..."
