@@ -42,9 +42,11 @@ def get_input():
             logging.debug(f"Response Status Code: {response.status_code}")
             if response.status_code == 200:
                 json_data = response.json()
+                logging.debug(f"API Response: {json_data}")
                 save_search_to_history(user_input, json_data)
             else:
                 logging.error(f"Error retrieving data. Status code: {response.status_code}")
+                logging.error(f"Response Content: {response.text}")
                 return redirect(url_for('error_page'))
         except requests.exceptions.RequestException as e:
             logging.error(f"Request error: {e}")
