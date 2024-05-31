@@ -2,7 +2,7 @@ name: Bump Version and Tag
 
 on:
   workflow_run:
-    workflows: ["CI_CD_Pipeline_WeatherApp"]
+    workflows: ["WeatherApp CI/CD"]
     types:
     - completed
 
