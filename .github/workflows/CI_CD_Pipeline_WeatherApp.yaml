@@ -21,11 +21,16 @@ jobs:
     - name: Set environment variables
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> $GITHUB_ENV
+        echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> $GITHUB_ENV
+
     - name: Write environment variables to .env file
       run: |
         echo "KEY_API=${{ secrets.KEY_API }}" >> .env
+        echo "BG_COLOR=${{ secrets.BG_COLOR }}" >> .env
+
     - name: Print working directory
       run: pwd
+
     - name: Ensure .env file exists
       run: ls -la
 
@@ -34,36 +39,13 @@ jobs:
       with:
         python-version: '3.8'
 
-    - name: Install dependencies
-      run: |
-        pip install -r WeatherApp/app/requirements.txt
-    # - name: Lint with Flake8
-    #   run: |
-    #     pip install flake8
-    #     flake8 WeatherApp/app/
-    #   another static test with sonarqube 
-
-
-
-    - name: List Docker Images
-      run: docker images
-
-    # - name: Log in to Docker Hub
-    #   run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    # - name: Tag and Push Docker Image
-    #   run: |
-    #     docker tag myweatherapp:${{ github.sha }} ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
-    #     docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:${{ github.sha }}
-    # - name: Save Docker Image Tag to File
-    #   run: echo "${{ github.sha }}" > image_tag.txt
-
-
-    - name: Upload  .env file and Helm Chart Files
+    - name: Upload .env file
       uses: actions/upload-artifact@v4
       with:
         name: build-files
-        path: .env
+        path: |
+          .env
+
 
   test:
     runs-on: ubuntu-latest
@@ -86,10 +68,10 @@ jobs:
 
     - name: Build Docker Image
       run: docker build -t myweatherapp:${{ github.sha }} -f WeatherApp/deploy/Dockerfile .
-    # - name: Ensure .env file exists
-    #   run: "ls -la \ntree\n"
+
     - name: Run Docker container
-      run: docker run -d -p 5000:5000 --name myweatherapp --env-file downloaded_artifacts/.env myweatherapp:${{ env.DOCKER_IMAGE_TAG }}
+      run: docker run -d -p 5000:5000 --name myweatherapp --env-file downloaded_artifacts/.env myweatherapp:${{ github.sha }}
+
     - name: Wait for the server to be ready
       run: |
         echo "Waiting for server to start..."
@@ -101,14 +83,12 @@ jobs:
           echo "Waiting for server..."
           sleep 5
         done
+
     - name: Print Docker logs for debugging
       run: docker logs myweatherapp
 
     - name: Install Python Dependencies
       run: pip install pytest selenium webdriver-manager
-
-    # - name: Print environment variables for debugging
-    #   run: env
 
     - name: Run Selenium tests
       run: xvfb-run --server-args="-screen 0 1920x1080x24" pytest WeatherApp/app/test/test_weather_app.py
@@ -117,9 +97,3 @@ jobs:
       run: |
         docker stop myweatherapp
         docker rm myweatherapp
-
-    # - name: Update Helm Chart and Deploy with ArgoCD
-    #   run: |
-    #     VERSION=${{ env.DOCKER_IMAGE_TAG }}
-    #     helm upgrade --install myweatherapp ./downloaded_artifacts/helm_charts_weatherapp --set image.tag=$VERSION
-    #     argocd app sync myweatherapp --revision $VERSION
