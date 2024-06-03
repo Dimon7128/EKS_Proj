@@ -19,13 +19,13 @@ jobs:
     - uses: actions/checkout@v4
 
     - name: Set environment variables
-      run: WeatherApp/app/scripts/set_env.sh
+      run: WeatherApp/app/CI_scripts/set_env.sh
       env:
         KEY_API: ${{ secrets.KEY_API }}
         BG_COLOR: ${{ secrets.BG_COLOR }}
 
     - name: Write environment variables to .env file
-      run: WeatherApp/app/scripts/write_env.sh
+      run: WeatherApp/app/CI_scripts/write_env.sh
       env:
         KEY_API: ${{ secrets.KEY_API }}
         BG_COLOR: ${{ secrets.BG_COLOR }}
@@ -118,15 +118,15 @@ jobs:
 
     - name: Bump version
       id: bump_version
-      run: WeatherApp/app/scripts/bump_version.sh
+      run: WeatherApp/app/CI_scripts/bump_version.sh
       env:
         GITHUB_ENV: $GITHUB_ENV
 
     - name: Commit and push new version
-      run: WeatherApp/app/scripts/commit_and_push_version.sh
+      run: WeatherApp/app/CI_scripts/commit_and_push_version.sh
 
     - name: Create tag
-      run: WeatherApp/app/scripts/create_git_tag.sh
+      run: WeatherApp/app/CI_scripts/create_git_tag.sh
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
