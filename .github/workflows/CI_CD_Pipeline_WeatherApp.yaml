@@ -64,7 +64,8 @@ jobs:
         name: build-files
         path: |
           image_tag.txt
-          helm_charts_weatherapp/
+          helm_charts_weatherapp
+          .env
 
     - name: List uploaded artifact files
       run: |
