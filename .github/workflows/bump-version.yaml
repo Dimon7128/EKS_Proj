@@ -19,27 +19,13 @@ jobs:
 
     - name: Bump version
       id: bump_version
-      run: |
-        current_version=$(cat WeatherApp/app/VERSION)
-        IFS='.' read -r -a version_parts <<< "$current_version"
-        version_parts[2]=$((version_parts[2]+1))
-        new_version="${version_parts[0]}.${version_parts[1]}.${version_parts[2]}"
-        echo "New version: $new_version"
-        echo $new_version > WeatherApp/app/VERSION
-        echo "new_version=$new_version" >> $GITHUB_ENV
+      run: WeatherApp/app/scripts/bump_version.sh
 
     - name: Commit and push new version
-      run: |
-        git config --global user.name "github-actions"
-        git config --global user.email "github-actions@github.com"
-        git add WeatherApp/app/VERSION
-        git commit -m "Bump version to ${{ env.new_version }}"
-        git push
+      run: WeatherApp/app/scripts/commit_and_push_version.sh
 
     - name: Create tag
-      run: |
-        git tag -a v${{ env.new_version }} -m "Version ${{ env.new_version }}"
-        git push origin v${{ env.new_version }}
+      run: WeatherApp/app/scripts/create_git_tag.sh
 
     - name: Log in to Docker Hub
       run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
