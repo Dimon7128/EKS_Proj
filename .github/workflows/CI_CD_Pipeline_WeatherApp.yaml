@@ -18,9 +18,6 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Set execute permissions for scripts
-      run: chmod +x WeatherApp/app/CI_scripts/*.sh
-
     - name: Set environment variables
       run: WeatherApp/app/CI_scripts/set_env.sh
       env:
@@ -36,46 +33,21 @@ jobs:
     - name: Print working directory
       run: pwd
 
-    - name: Print .env file for debugging
-      run: cat .env
+    - name: Ensure .env file exists
+      run: ls -la
 
     - name: Set up Python 3.8
       uses: actions/setup-python@v4
       with:
         python-version: '3.8'
 
-    - name: Install dependencies
-      run: pip install -r WeatherApp/app/requirements.txt
-
-    - name: Build Docker Image
-      run: docker build -t myweatherapp:latest -f WeatherApp/deploy/Dockerfile .
-
-    - name: List Docker Images
-      run: docker images
-
-    - name: Log in to Docker Hub
-      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
-
-    - name: Push Docker Image with `latest` Tag
-      run: |
-        docker tag myweatherapp:latest ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest
-        docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest
-
-    - name: Save Docker Image Tag to File
-      run: echo "latest" > image_tag.txt
-
-    - name: Upload Image Tag and Helm Chart Files
+    - name: Upload .env file
       uses: actions/upload-artifact@v4
       with:
         name: build-files
         path: |
-          image_tag.txt
-          helm_charts_weatherapp/
+          .env
 
-    - name: List uploaded artifact files
-      run: |
-        echo "Uploaded artifacts:"
-        ls -R image_tag.txt helm_charts_weatherapp
 
   test:
     runs-on: ubuntu-latest
@@ -96,19 +68,40 @@ jobs:
         name: build-files
         path: ./downloaded_artifacts
 
-    - name: Load Docker Image Tag
-      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
+
+    - name: Build Docker Image
+      run: docker build -t myweatherapp:latest -f WeatherApp/deploy/Dockerfile .
+
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.DOCKER_PASSWORD }}" | docker login -u "${{ secrets.DOCKER_USERNAME }}" --password-stdin
+
+    - name: Push Docker Image with `latest` Tag
+      run: |
+        docker tag myweatherapp:latest ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest
+        docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest
 
     - name: Run Docker container
-      run: docker run -d -p 5000:5000 --name myweatherapp ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest
+      run: docker run -d -p 5000:5000 --name myweatherapp --env-file downloaded_artifacts/.env myweatherapp:latest
 
-    - name: Wait for application to start
-      run: sleep 15
+    - name: Wait for the server to be ready
+      run: |
+        echo "Waiting for server to start..."
+        for i in {1..3}; do
+          if curl --silent --fail http://127.0.0.1:5000/; then
+            echo "Server is up!"
+            break
+          fi
+          echo "Waiting for server..."
+          sleep 5
+        done
+
+    - name: Print Docker logs for debugging
+      run: docker logs myweatherapp
 
     - name: Install Python Dependencies
       run: pip install pytest selenium webdriver-manager
 
-    - name: Run Selenium tests with XVFB
+    - name: Run Selenium tests
       run: xvfb-run --server-args="-screen 0 1920x1080x24" pytest WeatherApp/app/test/test_weather_app.py
 
     - name: Stop and remove Docker container
@@ -129,8 +122,6 @@ jobs:
         name: build-files
         path: ./downloaded_artifacts
 
-    - name: Load Docker Image Tag
-      run: echo "DOCKER_IMAGE_TAG=$(cat downloaded_artifacts/image_tag.txt)" >> $GITHUB_ENV
 
     - name: Bump version
       id: bump_version
@@ -150,5 +141,5 @@ jobs:
     - name: Tag and Push Docker Image with New Version
       run: |
         new_version=$(cat WeatherApp/app/VERSION)
-        docker tag myweatherapp:latest ${{ secrets.DOCKER_USERNAME }}/myweatherapp:$new_version
+        docker tag ${{ secrets.DOCKER_USERNAME }}/myweatherapp:latest ${{ secrets.DOCKER_USERNAME }}/myweatherapp:$new_version
         docker push ${{ secrets.DOCKER_USERNAME }}/myweatherapp:$new_version
